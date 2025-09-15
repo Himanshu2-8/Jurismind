@@ -1,4 +1,6 @@
 import { Upload, FileText, Shield, Zap, CheckCircle, ArrowRight, Scale, Users, Clock } from 'lucide-react';
+import { Button } from '../ui/button';
+import Link from 'next/link';
 
 export default function HomePage() {
 
@@ -55,13 +57,15 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-xl font-semibold flex items-center space-x-2 transition-all transform hover:scale-105">
-                <span>Start Analysis</span>
+              <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-xl font-semibold flex items-center space-x-2 transition-all transform hover:scale-105">
                 <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="border-2 border-amber-600 text-amber-600 hover:bg-amber-50 px-8 py-4 rounded-xl font-semibold transition-colors">
+                <Link href="/(auth)/Login">
+                  <span>Start Analysis</span>
+                </Link>
+              </Button>
+              <Button className="border-2 border-amber-600 text-amber-600 hover:bg-amber-50 px-8 py-4 rounded-xl font-semibold transition-colors">
                 View Demo
-              </button>
+              </Button>
             </div>
 
             <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
