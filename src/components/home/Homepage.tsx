@@ -1,48 +1,99 @@
+"use client";
+import { useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from "../../../firebase/firebaseConfig";
 import { Upload, FileText, Shield, Zap, CheckCircle, ArrowRight, Scale, Users, Clock } from 'lucide-react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import DocumentsUpload from '../documents/DocumentUpload';
+import { motion } from 'framer-motion';
+
+const MotionDiv = motion.div;
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.3
+    }
+  }
+};
+
+const FeatureCard = ({ icon, title, description }: { icon: React.ReactElement; title: string; description: string }) => (
+  <MotionDiv
+    variants={fadeIn}
+    className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-amber-100 group cursor-pointer"
+  >
+    <div className="mb-6">{icon}</div>
+    <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
+    <p className="text-gray-600 leading-relaxed">{description}</p>
+  </MotionDiv>
+);
+
+const HowItWorksStep = ({ icon, title, description }: { icon: React.ReactElement; title: string; description: string }) => (
+  <MotionDiv
+    variants={fadeIn}
+    className="text-center group"
+  >
+    <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 transition-colors">
+      {icon}
+    </div>
+    <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
+    <p className="text-gray-600">{description}</p>
+  </MotionDiv>
+);
 
 export default function HomePage() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const features = [
-    {
-      icon: <FileText className="w-8 h-8 text-amber-600" />,
-      title: "Document Analysis",
-      description: "AI-powered analysis of contracts, agreements, and legal documents with detailed insights."
-    },
-    {
-      icon: <Shield className="w-8 h-8 text-amber-600" />,
-      title: "Risk Assessment",
-      description: "Identify potential risks, unfavorable clauses, and areas requiring legal attention."
-    },
-    {
-      icon: <Zap className="w-8 h-8 text-amber-600" />,
-      title: "Instant Results",
-      description: "Get comprehensive analysis and recommendations in seconds, not hours."
-    }
+    // Your features array remains the same
+    { icon: <FileText className="w-8 h-8 text-amber-600" />, title: "Document Analysis", description: "AI-powered analysis of contracts, agreements, and legal documents with detailed insights." },
+    { icon: <Shield className="w-8 h-8 text-amber-600" />, title: "Risk Assessment", description: "Identify potential risks, unfavorable clauses, and areas requiring legal attention." },
+    { icon: <Zap className="w-8 h-8 text-amber-600" />, title: "Instant Results", description: "Get comprehensive analysis and recommendations in seconds, not hours." }
   ];
 
   const stats = [
+    // Your stats array remains the same
     { number: "10k+", label: "Documents Analyzed" },
     { number: "95%", label: "Accuracy Rate" },
     { number: "5min", label: "Average Processing Time" }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-cream to-amber-50/30">      
-
-      <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-neutral-50 to-amber-50/30">
+      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Analyze Legal Documents with
-              <span className="text-amber-600 block">AI Precision</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Upload your contracts, agreements, and legal documents. Get instant AI-powered analysis, 
-              risk assessment, and actionable insights to make informed decisions.
-            </p>
+          <MotionDiv initial="hidden" animate="visible" variants={staggerContainer} className="text-center max-w-4xl mx-auto">
+            <MotionDiv variants={fadeIn}>
+              <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+                Analyze Legal Documents with
+                <span className="text-amber-600 block">AI Precision</span>
+              </h1>
+            </MotionDiv>
+            <MotionDiv variants={fadeIn}>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Upload your contracts, agreements, and legal documents. Get instant AI-powered analysis,
+                risk assessment, and actionable insights to make informed decisions.
+              </p>
+            </MotionDiv>
             
+            <DocumentsUpload user={user} />
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-xl font-semibold flex items-center space-x-2 transition-all transform hover:scale-105">
@@ -64,7 +115,7 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
+          </MotionDiv>
         </div>
       </section>
 
@@ -77,20 +128,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <MotionDiv initial="hidden" whileInView="visible" variants={staggerContainer} viewport={{ once: true }} className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div 
-                key={index}
-                className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-amber-100 group cursor-pointer"
-              >
-                <div className="">
-                  <div className="mb-6">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                </div>
-              </div>
+              <FeatureCard key={index} {...feature} />
             ))}
-          </div>
+          </MotionDiv>
         </div>
       </section>
 
@@ -103,31 +145,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center group">
-              <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 transition-colors">
-                <Upload className="w-8 h-8 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">1. Upload Document</h3>
-              <p className="text-gray-600">Simply drag and drop or select your legal document to upload securely.</p>
-            </div>
-
-            <div className="text-center group">
-              <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 transition-colors">
-                <Zap className="w-8 h-8 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">2. AI Analysis</h3>
-              <p className="text-gray-600">Our AI processes your document and identifies key clauses, risks, and opportunities.</p>
-            </div>
-
-            <div className="text-center group">
-              <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 transition-colors">
-                <CheckCircle className="w-8 h-8 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">3. Get Insights</h3>
-              <p className="text-gray-600">Receive detailed analysis, recommendations, and actionable insights instantly.</p>
-            </div>
-          </div>
+          <MotionDiv initial="hidden" whileInView="visible" variants={staggerContainer} viewport={{ once: true }} className="grid md:grid-cols-3 gap-8">
+            <HowItWorksStep icon={<Upload className="w-8 h-8 text-amber-600" />} title="1. Upload Document" description="Simply drag and drop or select your legal document to upload securely." />
+            <HowItWorksStep icon={<Zap className="w-8 h-8 text-amber-600" />} title="2. AI Analysis" description="Our AI processes your document and identifies key clauses, risks, and opportunities." />
+            <HowItWorksStep icon={<CheckCircle className="w-8 h-8 text-amber-600" />} title="3. Get Insights" description="Receive detailed analysis, recommendations, and actionable insights instantly." />
+          </MotionDiv>
         </div>
       </section>
 

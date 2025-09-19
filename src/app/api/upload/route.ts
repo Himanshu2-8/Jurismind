@@ -1,41 +1,54 @@
-import { NextResponse } from "next/server";
-import { bucket,db } from "../../../../firebase/adminConfig";
-import { v4 as uuidv4 } from "uuid";
+import { NextRequest, NextResponse } from "next/server";
+import cloudinary from "@/lib/cloudinary";
+import { db } from "../../../../firebase/adminConfig";
 
-export async function POST(req: Request) {
+
+export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const userId = formData.get("userId") as string | null;
+    const file = formData.get("file") as File;
+    const uid = formData.get("uid") as string;
 
-    if (!file || !userId) {
-      return NextResponse.json({ error: "Missing file or userId" }, { status: 400 });
+    if(!uid){
+      alert("Please login to upload documents.");
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
-    const fileName = `${userId}/documents/${uuidv4()}-${file.name}`;
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
 
-    const fileRef = bucket.file(fileName);
-    await fileRef.save(fileBuffer, {
-      contentType: file.type,
+    if (file.type !== "application/pdf") {
+      return NextResponse.json({ error: "Only PDF files are allowed" }, { status: 400 });
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const uploadResponse = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({ resource_type: "raw", folder: "documents" }, (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        })
+        .end(buffer);
     });
 
-    const [url] = await fileRef.getSignedUrl({
-      action: "read",
-      expires: "03-01-2030",
-    });
+    const { original_filename, secure_url } = uploadResponse as any;
 
-    await db.collection("users").doc(userId).collection("documents").add({
-      name: file.name,
-      userId,
-      createdAt: new Date(),
-      fileUrl: url,
-      parsedData: null,
-    });
+    const docRef = await db.collection("users").doc(uid).collection("documents").add(
+      {
+        original_filename,
+        secure_url,
+        createdAt: new Date(),
+        parsedData: null,
+        status: "uploaded",
+      }
+    );
 
-    return NextResponse.json({ success: true, url });
-  } catch (error: any) {
-    console.error("Upload error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ uploadResponse, docId: docRef.id });
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
