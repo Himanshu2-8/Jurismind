@@ -1,8 +1,11 @@
+"use client";
 import React from 'react'
+import { useRouter } from 'next/navigation';
 import { Scale } from 'lucide-react';
 import {auth} from "../../firebase/firebaseConfig"
 
 const NavBar = () => {
+  const router = useRouter();
 
   if(auth.currentUser && auth.currentUser.displayName){
     return(
@@ -21,7 +24,12 @@ const NavBar = () => {
               <a href="#how-it-works" className="text-gray-700 hover:text-amber-600 transition-colors">How it Works</a>
               <a href="#pricing" className="text-gray-700 hover:text-amber-600 transition-colors">Pricing</a>
             </nav>
-            {auth.currentUser.photoURL?(<img src={auth.currentUser.photoURL} alt="" />):auth.currentUser.displayName[0]}
+            <div className="flex items-center space-x-4">
+              <button onClick={() => router.push('/profile')} className="text-gray-700 hover:text-amber-600 transition-colors">Profile</button>
+              <button onClick={() => auth.signOut()} className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -46,9 +54,9 @@ const NavBar = () => {
               <a href="#pricing" className="text-gray-700 hover:text-amber-600 transition-colors">Pricing</a>
             </nav>
             <div className="flex items-center space-x-4">
-              <button className="text-gray-700 hover:text-amber-600 transition-colors">Sign In</button>
-              <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Get Started
+              <button onClick={() => router.push('/signin')} className="text-gray-700 hover:text-amber-600 transition-colors">Sign In</button>
+              <button onClick={() => router.push('/signup')} className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
+                Sign Up
               </button>
             </div>
           </div>

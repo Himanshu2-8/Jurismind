@@ -13,6 +13,7 @@ import {
   ArrowPathIcon,
   CloudIcon
 } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 
 interface UserProps {
   uid: string;
@@ -29,6 +30,7 @@ interface DocumentData {
 }
 
 const ProfilePage = () => {
+  const router = useRouter();
   const [user, setUser] = useState<UserProps | null>(null);
   const [documents, setDocuments] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,7 +175,10 @@ const ProfilePage = () => {
                 ) : (
                   <tr>
                     <td colSpan={4} className="py-8 text-center text-gray-500 italic">
-                      No documents uploaded yet.
+                      <p>No documents uploaded yet.</p>
+                      <button onClick={() => router.push('/')} className="mt-4 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Upload Document
+                      </button>
                     </td>
                   </tr>
                 )}

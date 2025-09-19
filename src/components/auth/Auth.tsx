@@ -37,7 +37,7 @@ export const Signin = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("User signed in:", userCredential.user);
-      router.push("/");
+      router.push("/profile");
     } catch (error) {
       console.log("Error during login:", error);
     }
@@ -62,7 +62,7 @@ export const Signin = () => {
       }
       
       console.log("Google user signed in:", user);
-      router.push("/");
+      router.push("/profile");
     } catch (error) {
       console.log("Error during Google login:", error);
     }
@@ -122,6 +122,7 @@ export const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
 
   const handleRegister = async () => {
@@ -129,6 +130,7 @@ export const Signup = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log("User registered:", userCredential.user);
       await saveUser(userCredential.user.uid, name, email);
+      router.push("/profile");
     } catch (error) {
       console.log("Error during register:", error);
     }
@@ -139,6 +141,7 @@ export const Signup = () => {
       const userCredential = await signInWithPopup(auth, googleAuthProvider);
       console.log("Google user registered:", userCredential.user);
       await saveUser(userCredential.user.uid, userCredential.user.displayName || "", userCredential.user.email || "");
+      router.push("/profile");
     } catch (error) {
       console.log("Error during Google register:", error);
     }
