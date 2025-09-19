@@ -43,18 +43,6 @@ export default function HomePage() {
               risk assessment, and actionable insights to make informed decisions.
             </p>
             
-            <div className="max-w-2xl mx-auto mb-8">
-              <div 
-                className="border-2 border-dashed border-amber-300 rounded-2xl bg-white/50 hover:bg-white/70 transition-all duration-300 cursor-pointer group"
-              >
-                <div className="p-12 text-center">
-                  <Upload className="" />
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">Drop your document here</h3>
-                  <p className="text-gray-600 mb-4">or click to browse files</p>
-                  <p className="text-sm text-gray-500">Supports PDF, DOCX, TXT • Max 10MB</p>
-                </div>
-              </div>
-            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-xl font-semibold flex items-center space-x-2 transition-all transform hover:scale-105">

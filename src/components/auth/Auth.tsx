@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { auth, googleAuthProvider, db } from "../../../firebase/firebaseConfig";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -12,6 +12,21 @@ import {
 } from "firebase/auth";
 import { Lock, Mail, User, ArrowRight, LogIn, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+const saveUser = async (uid: string, name: string, email: string) => {
+  try {
+    await setDoc(doc(db, "users", uid), {
+      uid,
+      name,
+      email,
+      createdAt: serverTimestamp(),
+    });
+    console.log("User data saved successfully");
+  } catch (error) {
+    console.error("Error saving user data:", error);
+    throw error;
+  }
+};
 
 export const Signin = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +46,22 @@ export const Signin = () => {
   const handleGoogleSignIn = async () => {
     try {
       const userCredential = await signInWithPopup(auth, googleAuthProvider);
-      console.log("Google user signed in:", userCredential.user);
+      const user = userCredential.user;
+      
+      // Check if user exists in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      
+      // If user doesn't exist, save their info
+      if (!userDoc.exists()) {
+        await saveUser(
+          user.uid, 
+          user.displayName || "", 
+          user.email || ""
+        );
+        console.log("New Google user created in Firestore:", user.uid);
+      }
+      
+      console.log("Google user signed in:", user);
       router.push("/");
     } catch (error) {
       console.log("Error during Google login:", error);
@@ -93,18 +123,6 @@ export const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const saveUser = async (uid: string, name: string, email: string) => {
-    try {
-      await setDoc(doc(db, "users", uid), {
-        uid,
-        name,
-        email,
-        createdAt: serverTimestamp()
-      }, { merge: true });
-    } catch (error) {
-      console.log("Error saving user:", error);
-    }
-  };
 
   const handleRegister = async () => {
     try {
