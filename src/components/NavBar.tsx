@@ -3,6 +3,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation';
 import { Scale } from 'lucide-react';
 import {auth} from "../../firebase/firebaseConfig"
+import Link from 'next/link';
 
 const NavBar = () => {
   const router = useRouter();
@@ -17,12 +18,14 @@ const NavBar = () => {
               <div className="bg-amber-600 p-2 rounded-lg">
                 <Scale className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold text-gray-800">Jurismind</span>
+              <Link href="/">
+                <span className="text-2xl font-bold text-gray-800 cursor-pointer hover:text-amber-600">Jurismind</span>
+              </Link>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <a href="#features" className="text-gray-700 hover:text-amber-600 transition-colors">Features</a>
-              <a href="#how-it-works" className="text-gray-700 hover:text-amber-600 transition-colors">How it Works</a>
-              <a href="#pricing" className="text-gray-700 hover:text-amber-600 transition-colors">Pricing</a>
+              <Link href="/features" className="text-gray-700 hover:text-amber-600 transition-colors">Features</Link>
+              <Link href="/how-it-works" className="text-gray-700 hover:text-amber-600 transition-colors">How it Works</Link>
+              <Link href='/pricing' className="text-gray-700 hover:text-amber-600 transition-colors">Pricing</Link>
             </nav>
             <div className="flex items-center space-x-4">
               <button onClick={() => router.push('/profile')} className="text-gray-700 hover:text-amber-600 transition-colors">Profile</button>

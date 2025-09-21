@@ -47,7 +47,14 @@ export async function POST(req: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const parsedText = await extractText(buffer);
+
+    let parsedText = "";
+    try {
+      parsedText = await extractText(buffer);
+    } catch (parseErr) {
+      console.error("PDF parsing failed:", parseErr);
+      parsedText = "";
+    }
 
     console.log("Uploading file to Cloudinary...");
     const uploadResponse = await new Promise((resolve, reject) => {
@@ -66,7 +73,8 @@ export async function POST(req: NextRequest) {
 
     console.log("Cloudinary response:", uploadResponse);
 
-    const { original_filename, secure_url } = uploadResponse as any;
+    const original_filename = (uploadResponse as any)?.original_filename || "unknown";
+    const secure_url = (uploadResponse as any)?.secure_url || "";
 
     const docRef = await db.collection("users").doc(uid).collection("documents").add(
       {
