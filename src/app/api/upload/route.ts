@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    return NextResponse.json({ uploadResponse, docId: docRef.id });
+    return NextResponse.json({ uploadResponse, docId: docRef.id }, { status: 200 });
   } catch (error) {
     console.error("Upload route error:", error);
     return NextResponse.json({ error: (error as Error).message || "Upload failed" }, { status: 500 });

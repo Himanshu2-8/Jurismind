@@ -34,6 +34,10 @@ export default function DocumentsUpload({ user }: DocumentsUploadProps) {
 
       const data = await res.json();
       console.log("Uploaded file:", data);
+      if(res.status==200){
+        setFile(null);
+        alert("File uploaded and parsed successfully!");
+      }
     } catch (err) {
       console.error("Upload failed:", err);
     } finally {
