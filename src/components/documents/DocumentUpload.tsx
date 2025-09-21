@@ -18,6 +18,10 @@ export default function DocumentsUpload({ user }: DocumentsUploadProps) {
   const handleUpload = async () => {
     if (!file) return;
     const formData = new FormData();
+    if(!user) {
+      console.error("User not authenticated");
+      return;
+    }
     formData.append("file", file);
     formData.append("uid", user.uid);
 
